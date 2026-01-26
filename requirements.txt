@@ -1,18 +1,15 @@
-# Backend
-fastapi==0.104.1
-uvicorn==0.24.0
-pydantic==2.5.0
+# PINNED VERSIONS - Python 3.13 PROVEN
+fastapi==0.115.0
+uvicorn==0.32.0
+pydantic==2.9.2
 
-# Data & ML - ALL Python 3.13 compatible
-pandas>=2.2.3
-numpy>=2.0.0          # ← FIXED: This was killing sklearn
-scikit-learn>=1.5.0    # ← FIXED: Needs modern numpy + Python 3.13 Cython
-yfinance>=0.2.40
+pandas==2.2.3
+numpy==2.1.1
+scikit-learn==1.6.1
+yfinance==0.2.44
 
-# Frontend
-streamlit>=1.38.0      # ← FIXED: 1.28.2 too old
-plotly>=5.22.0         # ← FIXED: Security updates
+streamlit==1.39.0
+plotly==5.24.1
 
-# Utils
-python-multipart==0.0.6
-requests>=2.32.0       # ← FIXED: Security update
+python-multipart==0.0.9
+requests==2.32.3
