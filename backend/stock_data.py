@@ -1,61 +1,90 @@
-import time
-import yfinance as yf
-import requests
-import pandas as pd
-from typing import Optional
+# =========================
+# Stock metadata
+# =========================
 
+def get_stock_info(symbol: str) -> dict:
+    try:
+        stock = yf.Ticker(symbol)
+        info = stock.info or {}
 
-class StockData:
-    def __init__(self, symbol: str):
-        self.symbol = symbol
-        self.tickers_to_try = [symbol]
-
-        # Auto-add BSE fallback for NSE tickers
-        if symbol.endswith(".NS"):
-            self.tickers_to_try.append(symbol.replace(".NS", ".BO"))
-
-    def get_data(self, period: str = "1y") -> pd.DataFrame:
-        """Get stock data with NSE/BSE fallback + retries"""
-        retry_count = 3
-
-        for attempt in range(retry_count):
-            for ticker in self.tickers_to_try:
-                try:
-                    print(f"Trying {ticker} (attempt {attempt + 1})")
-
-                    stock = yf.Ticker(ticker)
-                    df = stock.history(period=period, auto_adjust=True)
-
-                    if not df.empty and len(df) > 5:
-                        df["ticker"] = ticker
-                        return df
-
-                except requests.exceptions.HTTPError as e:
-                    if e.response and e.response.status_code == 404:
-                        continue
-                    break
-
-                except Exception:
-                    time.sleep(1)
-                    continue
-
-            if attempt < retry_count - 1:
-                time.sleep(2)
-
-        return pd.DataFrame()
+        return {
+            "symbol": symbol,
+            "name": info.get("longName"),
+            "sector": info.get("sector"),
+            "industry": info.get("industry"),
+            "market_cap": info.get("marketCap"),
+            "currency": info.get("currency"),
+            "exchange": info.get("exchange"),
+        }
+    except Exception:
+        return {"symbol": symbol}
 
 
 # =========================
-# Module-level helper APIs
+# Technical indicators
 # =========================
 
-def get_stock_data(symbol: str, period: str = "1y") -> pd.DataFrame:
-    stock = StockData(symbol)
-    return stock.get_data(period)
+def calculate_technical_indicators(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+
+    df["SMA_20"] = df["Close"].rolling(20).mean()
+    df["SMA_50"] = df["Close"].rolling(50).mean()
+    df["SMA_200"] = df["Close"].rolling(200).mean()
+
+    delta = df["Close"].diff()
+    gain = delta.clip(lower=0).rolling(14).mean()
+    loss = -delta.clip(upper=0).rolling(14).mean()
+    rs = gain / loss
+    df["RSI"] = 100 - (100 / (1 + rs))
+
+    exp1 = df["Close"].ewm(span=12, adjust=False).mean()
+    exp2 = df["Close"].ewm(span=26, adjust=False).mean()
+    df["MACD"] = exp1 - exp2
+
+    return df
 
 
-def get_current_price(symbol: str) -> float | None:
-    df = get_stock_data(symbol, period="5d")
-    if df.empty:
-        return None
-    return float(df["Close"].iloc[-1])
+# =========================
+# Trading signals
+# =========================
+
+def generate_signals(df: pd.DataFrame) -> list[dict]:
+    signals = []
+
+    if len(df) < 2:
+        return signals
+
+    latest = df.iloc[-1]
+
+    if latest["RSI"] < 30:
+        signals.append({"type": "BUY", "reason": "RSI oversold"})
+
+    if latest["RSI"] > 70:
+        signals.append({"type": "SELL", "reason": "RSI overbought"})
+
+    if latest["Close"] > latest["SMA_50"]:
+        signals.append({"type": "BUY", "reason": "Price above SMA 50"})
+
+    if latest["Close"] < latest["SMA_50"]:
+        signals.append({"type": "SELL", "reason": "Price below SMA 50"})
+
+    return signals
+
+
+# =========================
+# Stock lists
+# =========================
+
+INDIAN_STOCKS = [
+    "RELIANCE.NS",
+    "TCS.NS",
+    "INFY.NS",
+    "HDFCBANK.NS",
+]
+
+US_STOCKS = [
+    "AAPL",
+    "MSFT",
+    "GOOGL",
+    "AMZN",
+]
