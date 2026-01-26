@@ -14,8 +14,8 @@ class StockData:
         if symbol.endswith(".NS"):
             self.tickers_to_try.append(symbol.replace(".NS", ".BO"))
 
-    def get_data(self, period: str = "1y") -> Optional[pd.DataFrame]:
-        """Get stock data with NSE/BSE/US fallback + retries"""
+    def get_data(self, period: str = "1y") -> pd.DataFrame:
+        """Get stock data with NSE/BSE fallback + retries"""
         retry_count = 3
 
         for attempt in range(retry_count):
@@ -45,7 +45,17 @@ class StockData:
         return pd.DataFrame()
 
 
-# ✅ THIS MUST BE OUTSIDE THE CLASS
-def get_stock_data(symbol: str, period: str = "1y") -> Optional[pd.DataFrame]:
+# =========================
+# Module-level helper APIs
+# =========================
+
+def get_stock_data(symbol: str, period: str = "1y") -> pd.DataFrame:
     stock = StockData(symbol)
     return stock.get_data(period)
+
+
+def get_current_price(symbol: str) -> float | None:
+    df = get_stock_data(symbol, period="5d")
+    if df.empty:
+        return None
+    return float(df["Close"].iloc[-1])
