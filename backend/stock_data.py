@@ -1,5 +1,7 @@
 # backend/stock_data.py
 
+from __future__ import annotations
+
 import yfinance as yf
 import pandas as pd
 from typing import List, Dict
@@ -12,9 +14,7 @@ from typing import List, Dict
 def get_stock_data(ticker: str, period: str = "1y") -> pd.DataFrame:
     """
     Fetch historical stock data from Yahoo Finance.
-
-    Always returns a DataFrame (empty if no data).
-    Index is DatetimeIndex (NO reset_index here).
+    Always returns a DataFrame (empty if failure).
     """
     try:
         stock = yf.Ticker(ticker)
@@ -49,7 +49,7 @@ def get_current_price(ticker: str) -> float | None:
 
 def get_stock_info(ticker: str) -> Dict:
     """
-    Fetch stock metadata (safe for cloud deployment).
+    Fetch stock metadata safely.
     """
     try:
         stock = yf.Ticker(ticker)
@@ -90,7 +90,7 @@ def calculate_technical_indicators(df: pd.DataFrame) -> pd.DataFrame:
 
     df = df.copy()
 
-    # Moving averages
+    # SMA
     df["SMA_20"] = df["Close"].rolling(20).mean()
     df["SMA_50"] = df["Close"].rolling(50).mean()
     df["SMA_200"] = df["Close"].rolling(200).mean()
@@ -111,11 +111,11 @@ def calculate_technical_indicators(df: pd.DataFrame) -> pd.DataFrame:
     df["RSI"] = 100 - (100 / (1 + rs))
 
     # Bollinger Bands
-    bb_mid = df["Close"].rolling(20).mean()
-    bb_std = df["Close"].rolling(20).std()
-    df["BB_Middle"] = bb_mid
-    df["BB_Upper"] = bb_mid + (2 * bb_std)
-    df["BB_Lower"] = bb_mid - (2 * bb_std)
+    mid = df["Close"].rolling(20).mean()
+    std = df["Close"].rolling(20).std()
+    df["BB_Middle"] = mid
+    df["BB_Upper"] = mid + (2 * std)
+    df["BB_Lower"] = mid - (2 * std)
 
     return df
 
@@ -126,76 +126,40 @@ def calculate_technical_indicators(df: pd.DataFrame) -> pd.DataFrame:
 
 def generate_signals(df: pd.DataFrame) -> List[Dict]:
     """
-    Generate BUY / SELL signals using indicators.
+    Generate BUY / SELL signals.
     """
-    signals = []
+    signals: List[Dict] = []
 
     if df.empty or len(df) < 2:
         return signals
 
     latest = df.iloc[-1]
 
-    # SMA crossover
     if latest["SMA_20"] > latest["SMA_50"]:
-        signals.append({
-            "type": "BUY",
-            "indicator": "SMA",
-            "reason": "20-day SMA above 50-day SMA",
-        })
+        signals.append({"type": "BUY", "indicator": "SMA"})
     elif latest["SMA_20"] < latest["SMA_50"]:
-        signals.append({
-            "type": "SELL",
-            "indicator": "SMA",
-            "reason": "20-day SMA below 50-day SMA",
-        })
+        signals.append({"type": "SELL", "indicator": "SMA"})
 
-    # RSI
     if latest["RSI"] < 30:
-        signals.append({
-            "type": "BUY",
-            "indicator": "RSI",
-            "reason": "RSI oversold",
-        })
+        signals.append({"type": "BUY", "indicator": "RSI"})
     elif latest["RSI"] > 70:
-        signals.append({
-            "type": "SELL",
-            "indicator": "RSI",
-            "reason": "RSI overbought",
-        })
+        signals.append({"type": "SELL", "indicator": "RSI"})
 
-    # MACD
     if latest["MACD"] > latest["Signal_Line"]:
-        signals.append({
-            "type": "BUY",
-            "indicator": "MACD",
-            "reason": "MACD above signal line",
-        })
+        signals.append({"type": "BUY", "indicator": "MACD"})
     elif latest["MACD"] < latest["Signal_Line"]:
-        signals.append({
-            "type": "SELL",
-            "indicator": "MACD",
-            "reason": "MACD below signal line",
-        })
+        signals.append({"type": "SELL", "indicator": "MACD"})
 
-    # Bollinger Bands
     if latest["Close"] < latest["BB_Lower"]:
-        signals.append({
-            "type": "BUY",
-            "indicator": "Bollinger Bands",
-            "reason": "Price below lower band",
-        })
+        signals.append({"type": "BUY", "indicator": "BB"})
     elif latest["Close"] > latest["BB_Upper"]:
-        signals.append({
-            "type": "SELL",
-            "indicator": "Bollinger Bands",
-            "reason": "Price above upper band",
-        })
+        signals.append({"type": "SELL", "indicator": "BB"})
 
     return signals
 
 
 # ==================================================
-# Stock lists (used by /stocks endpoint)
+# Stock lists
 # ==================================================
 
 INDIAN_STOCKS = {
@@ -207,8 +171,6 @@ INDIAN_STOCKS = {
     "ITC.NS": "ITC Limited",
     "SBIN.NS": "State Bank of India",
     "BHARTIARTL.NS": "Bharti Airtel",
-    "KOTAKBANK.NS": "Kotak Mahindra Bank",
-    "LT.NS": "Larsen & Toubro",
 }
 
 US_STOCKS = {
