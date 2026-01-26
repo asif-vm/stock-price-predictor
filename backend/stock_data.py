@@ -50,3 +50,7 @@ class StockData:
         
         print(f"❌ ALL FAILED: {self.symbol}")
         return pd.DataFrame()  # Return empty DataFrame (no crash)
+        def get_stock_data(symbol: str, period: str = "1y") -> Optional[pd.DataFrame]:
+    stock = StockData(symbol)
+    return stock.get_data(period)
+
