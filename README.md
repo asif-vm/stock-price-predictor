@@ -81,6 +81,9 @@ Open a new terminal:
 bashcd frontend
 streamlit run app.py
 Frontend will open automatically at http://localhost:8501
+
+“Live market data uses third-party providers that may rate-limit cloud IPs.
+Fallback and caching implemented.”
 📖 API Endpoints
 Stock Data
 GET  /stocks              - Get list of available stocks
@@ -222,3 +225,4 @@ FastAPI Documentation
 Streamlit Documentation
 yfinance Documentation
 Technical Indicators Guide
+
