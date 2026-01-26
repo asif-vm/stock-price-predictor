@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from typing import Optional, List
 import pandas as pd
 
-from stock_data import (
+from .stock_data import (
     get_stock_data, 
     get_current_price, 
     get_stock_info,
@@ -335,4 +335,5 @@ def compare_stocks(tickers: List[str]):
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="127.0.0.1", port=8000)
