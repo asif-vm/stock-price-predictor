@@ -14,7 +14,7 @@ from .stock_data import (
     INDIAN_STOCKS,
     US_STOCKS
 )
-from predictor import (
+from .predictor import (
     linear_regression_prediction,
     advanced_prediction_with_features,
     calculate_price_targets
@@ -337,3 +337,4 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="127.0.0.1", port=8000)
+
