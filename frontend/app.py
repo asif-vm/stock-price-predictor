@@ -7,7 +7,7 @@ import pandas as pd
 from datetime import datetime
 
 # Configuration
-API_URL = "http://localhost:8000"
+API_URL = "https://stock-price-predictor-gxoj.onrender.com"
 
 # Page config
 st.set_page_config(
@@ -450,4 +450,5 @@ st.markdown("""
         <p>📈 Stock Price Predictor | Built with FastAPI + Streamlit | Data from Yahoo Finance</p>
         <p>⚠️ Disclaimer: This is for educational purposes only. Not financial advice.</p>
     </div>
+
 """, unsafe_allow_html=True)
