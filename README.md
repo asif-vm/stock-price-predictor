@@ -1,8 +1,14 @@
 📈 Stock Price Prediction & Analysis System
 A full-stack machine learning application for real-time stock analysis and price prediction using FastAPI backend and Streamlit frontend.
-Show Image
-Show Image
-Show Image
+<p align="center">
+  <img src="screenshots/dashboard.png" width="90%" />
+</p>
+
+<p align="center">
+  <img src="screenshots/prediction.png" width="45%" />
+  <img src="screenshots/technical-analysis.png" width="45%" />
+</p>
+
 🎯 Features
 📊 Real-Time Stock Data
 
@@ -225,4 +231,5 @@ FastAPI Documentation
 Streamlit Documentation
 yfinance Documentation
 Technical Indicators Guide
+
 
