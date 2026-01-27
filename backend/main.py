@@ -4,8 +4,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, List
 import pandas as pd
+import sys
+import os
 
-from .stock_data import (
+# Add backend directory to path
+sys.path.insert(0, os.path.dirname(__file__))
+
+import stock_data
+import predictor
+
+# Now use the imported modules
+from stock_data import (
     get_stock_data, 
     get_current_price, 
     get_stock_info,
@@ -14,12 +23,11 @@ from .stock_data import (
     INDIAN_STOCKS,
     US_STOCKS
 )
-from .predictor import (
+from predictor import (
     linear_regression_prediction,
     advanced_prediction_with_features,
     calculate_price_targets
 )
-
 app = FastAPI(
     title="Stock Price Prediction API",
     description="Real-time stock analysis and price prediction using ML",
@@ -284,4 +292,5 @@ def compare_stocks(tickers: List[str]):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
 
