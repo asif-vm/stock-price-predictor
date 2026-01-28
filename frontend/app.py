@@ -62,12 +62,15 @@ def check_api_health():
         return False
 
 if not check_api_health():
-    st.error("❌ Cannot connect to API. Make sure FastAPI is running on port 8000")
-    st.info("Run: `cd backend && uvicorn main:app --reload --port 8000`")
-    st.stop()
+    st.warning("⏳ Backend is waking up (free tier)... This takes 30-60 seconds on first load.")
+    st.info("💡 The backend 'sleeps' after 15 minutes of inactivity on the free tier. Subsequent requests will be instant!")
+    
+    with st.spinner("Connecting to backend..."):
+        import time
+        time.sleep(30)
+        st.rerun()
 else:
     st.success("✅ Connected to API")
-
 # Fetch available stocks
 @st.cache_data(ttl=3600)
 def get_available_stocks():
@@ -452,4 +455,5 @@ st.markdown("""
     </div>
 
 """, unsafe_allow_html=True)
+
 
