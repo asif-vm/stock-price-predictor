@@ -1,0 +1,58 @@
+{
+  "data_source": "Yahoo Finance adjusted daily OHLCV",
+  "period": {
+    "start": "2022-01-01",
+    "end_exclusive": "2026-01-01"
+  },
+  "split": "oldest 80% train / newest 20% test per ticker",
+  "baseline": "predict next close as the current close",
+  "model": "StandardScaler + Ridge(alpha=10.0)",
+  "tickers": {
+    "AAPL": {
+      "train_rows": 785,
+      "test_rows": 197,
+      "model_mae": 3.1179,
+      "model_rmse": 4.5912,
+      "baseline_mae": 2.745,
+      "baseline_rmse": 4.3107,
+      "model_mae_change_vs_baseline_pct": -13.58,
+      "directional_accuracy": 0.4365
+    },
+    "MSFT": {
+      "train_rows": 785,
+      "test_rows": 197,
+      "model_mae": 5.791,
+      "model_rmse": 7.7059,
+      "baseline_mae": 4.4032,
+      "baseline_rmse": 6.4005,
+      "model_mae_change_vs_baseline_pct": -31.52,
+      "directional_accuracy": 0.4467
+    },
+    "RELIANCE.NS": {
+      "train_rows": 772,
+      "test_rows": 194,
+      "model_mae": 12.7351,
+      "model_rmse": 17.3169,
+      "baseline_mae": 11.9663,
+      "baseline_rmse": 16.4188,
+      "model_mae_change_vs_baseline_pct": -6.42,
+      "directional_accuracy": 0.4897
+    },
+    "TCS.NS": {
+      "train_rows": 772,
+      "test_rows": 194,
+      "model_mae": 27.3191,
+      "model_rmse": 37.2754,
+      "baseline_mae": 26.4467,
+      "baseline_rmse": 36.7203,
+      "model_mae_change_vs_baseline_pct": -3.3,
+      "directional_accuracy": 0.4742
+    }
+  },
+  "summary": {
+    "ticker_count": 4,
+    "total_test_rows": 782,
+    "mean_model_mae_change_vs_baseline_pct": -13.71,
+    "decision": "no-go: retain the naive baseline"
+  }
+}

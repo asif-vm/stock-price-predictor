@@ -138,6 +138,26 @@ Analyzes multiple technical indicators
 Generates buy/sell signals with reasoning
 Provides overall recommendation
 
+## Leakage-Safe Evaluation
+
+The repository includes a chronological benchmark that trains on the oldest 80% of observations and evaluates on the newest 20%. Features at day `t` predict the next trading day's close, and the candidate Ridge model is compared with a naive baseline that predicts the next close as the current close.
+
+```bash
+python -m backend.evaluation --output evaluation/results.json
+pytest -q
+```
+
+Fixed benchmark: Yahoo Finance adjusted daily data from 2022-01-01 through 2025-12-31.
+
+| Ticker | Unseen test days | Ridge MAE | Naive MAE | Ridge MAE change vs baseline |
+|---|---:|---:|---:|---:|
+| AAPL | 197 | 3.1179 | 2.7450 | -13.58% |
+| MSFT | 197 | 5.7910 | 4.4032 | -31.52% |
+| RELIANCE.NS | 194 | 12.7351 | 11.9663 | -6.42% |
+| TCS.NS | 194 | 27.3191 | 26.4467 | -3.30% |
+
+Across 782 unseen daily observations, the Ridge candidate underperformed the naive baseline by 13.71% mean relative MAE. The documented decision is therefore **no-go: retain the naive baseline**. This result is intentionally reported instead of presenting an in-sample score as forecasting evidence.
+
 📝 Example Usage
 Via API (Python)
 pythonimport requests
