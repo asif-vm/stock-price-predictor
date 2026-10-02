@@ -158,6 +158,16 @@ Fixed benchmark: Yahoo Finance adjusted daily data from 2022-01-01 through 2025-
 
 Across 782 unseen daily observations, the Ridge candidate underperformed the naive baseline by 13.71% mean relative MAE. The documented decision is therefore **no-go: retain the naive baseline**. This result is intentionally reported instead of presenting an in-sample score as forecasting evidence.
 
+## Render Deployment
+
+The root `main.py` exposes `backend.main:app`, allowing Render to start the API with:
+
+```bash
+uvicorn main:app --host 0.0.0.0 --port $PORT
+```
+
+Use `/health` for service health checks.
+
 📝 Example Usage
 Via API (Python)
 pythonimport requests
